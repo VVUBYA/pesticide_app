@@ -215,8 +215,6 @@ class DashboardScreen extends StatelessWidget {
                         },
                       ),
                     );
-                    // Implement navigation to emergency contacts screen
-                    // Navigator.push(context, MaterialPageRoute(builder: (context) => EmergencyContactsScreen()));
                   },
                 ),
                 // Add other DashboardCards here
