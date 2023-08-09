@@ -59,7 +59,7 @@ class _PesticideTrackerScreenState extends State<PesticideTrackerScreen> {
             onChanged: (value) {
               // Handle field selection
               if (value != null) {
-                _showAddPesticideDialog(value);
+                _showAddPesticideEntryDialog(value);
               }
             },
           ),
@@ -71,8 +71,19 @@ class _PesticideTrackerScreenState extends State<PesticideTrackerScreen> {
                 PesticideEntry entry = pesticideEntries[index];
                 return ListTile(
                   title: Text(entry.name),
-                  subtitle: Text(
-                      'Field: ${entry.field}\nDate Applied: ${entry.dateApplied}\nNotes: ${entry.notes}'),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Field: ${entry.field}'),
+                      Text('Date Applied: ${entry.dateApplied}'),
+                      Text('Area Treated: ${entry.areaTreated}'),
+                      Text('Rate (mls per 20 liters): ${entry.rate}'),
+                      Text('Total Amount Applied: ${entry.totalAmountApplied}'),
+                      Text('Crop Treated: ${entry.cropTreated}'),
+                      Text('Disposal Method: ${entry.disposalMethod}'),
+                      Text('Notes: ${entry.notes}'),
+                    ],
+                  ),
                   trailing: IconButton(
                     icon: Icon(Icons.delete),
                     onPressed: () {
@@ -131,7 +142,7 @@ class _PesticideTrackerScreenState extends State<PesticideTrackerScreen> {
     );
   }
 
-  void _showAddPesticideDialog(String selectedField) {
+  void _showAddPesticideEntryDialog(String selectedField) {
     PesticideEntry newEntry = PesticideEntry(
       name: '',
       field: selectedField,
@@ -158,21 +169,36 @@ class _PesticideTrackerScreenState extends State<PesticideTrackerScreen> {
                     newEntry.name = value;
                   },
                 ),
-                ListTile(
-                  title: Text('Date Applied'),
-                  subtitle: Text('${newEntry.dateApplied}'),
-                  onTap: () async {
-                    final selectedDate = await showDatePicker(
-                      context: context,
-                      initialDate: DateTime.now(),
-                      firstDate: DateTime(2022),
-                      lastDate: DateTime(2030),
-                    );
-                    if (selectedDate != null) {
-                      setState(() {
-                        newEntry.dateApplied = selectedDate;
-                      });
-                    }
+                TextFormField(
+                  decoration: InputDecoration(labelText: 'Area Treated'),
+                  onChanged: (value) {
+                    newEntry.areaTreated = double.tryParse(value) ?? 0;
+                  },
+                ),
+                TextFormField(
+                  decoration:
+                      InputDecoration(labelText: 'Rate (mls per 20 liters)'),
+                  onChanged: (value) {
+                    newEntry.rate = double.tryParse(value) ?? 0;
+                  },
+                ),
+                TextFormField(
+                  decoration:
+                      InputDecoration(labelText: 'Total Amount Applied'),
+                  onChanged: (value) {
+                    newEntry.totalAmountApplied = double.tryParse(value) ?? 0;
+                  },
+                ),
+                TextFormField(
+                  decoration: InputDecoration(labelText: 'Crop Treated'),
+                  onChanged: (value) {
+                    newEntry.cropTreated = value;
+                  },
+                ),
+                TextFormField(
+                  decoration: InputDecoration(labelText: 'Disposal Method'),
+                  onChanged: (value) {
+                    newEntry.disposalMethod = value;
                   },
                 ),
                 TextFormField(

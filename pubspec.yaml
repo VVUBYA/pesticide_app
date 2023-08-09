@@ -32,6 +32,8 @@ dependencies:
   table_calendar: ^3.0.0
   url_launcher: ^6.0.10
   http: ^0.13.3
+  html: ^0.15.0
+  
 
 dev_dependencies:
   flutter_test:

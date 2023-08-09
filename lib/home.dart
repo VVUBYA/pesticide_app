@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/', // Set the initial route here
       routes: {
         '/': (context) => WelcomeScreen(),
-        LoginScreen.routeName: (context) => const LoginScreen(),
+        LoginScreen.routeName: (context) => LoginScreen(),
         // Add more routes if needed
       },
       onUnknownRoute: (settings) {

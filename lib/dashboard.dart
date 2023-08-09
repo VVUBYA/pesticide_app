@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Import FirebaseAuth
+import 'menubar.dart';
 import 'pesticide_identfication_section.dart';
 import 'safety_tips.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'recent_activity.dart';
 import 'usage_tracker.dart';
 import 'emergency_contacts.dart';
-
 import 'recent_activity.dart';
 import 'usage_tracker.dart';
 import 'weather.dart';
@@ -24,7 +25,15 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class DashboardScreen extends StatelessWidget {
+class DashboardScreen extends StatefulWidget {
+  @override
+  _DashboardScreenState createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends State<DashboardScreen> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   void _showCalendar(BuildContext context) {
     showDialog(
       context: context,
@@ -50,6 +59,7 @@ class DashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       body: Column(
         children: [
           // Custom App Bar
@@ -72,7 +82,8 @@ class DashboardScreen extends StatelessWidget {
                     IconButton(
                       icon: Icon(Icons.menu, color: Colors.white, size: 40),
                       onPressed: () {
-                        // Implement the menu functionality
+                        _scaffoldKey.currentState!
+                            .openDrawer(); // Open the drawer
                       },
                     ),
                     IconButton(
@@ -165,7 +176,7 @@ class DashboardScreen extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (BuildContext content) {
-                          return PesticideIdentificationScreen();
+                          return PesticideIdentificationPage();
                         },
                       ),
                     );
@@ -223,6 +234,7 @@ class DashboardScreen extends StatelessWidget {
           ),
         ],
       ),
+      drawer: CustomMenuBar(auth: _auth), // Add the MenuBar to the drawer
     );
   }
 }

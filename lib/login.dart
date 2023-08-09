@@ -1,16 +1,46 @@
-import 'package:csdatabase/dashboard.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'signup.dart';
 import 'forget_password_mail_screen.dart';
 import 'forget_password_phone_screen.dart';
+import 'dashboard.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   static String routeName = '/login';
-  const LoginScreen({Key? key}) : super(key: key);
+
+  @override
+  _LoginScreenState createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  String _email = '';
+  String _password = '';
+
+  void _signInWithEmailAndPassword() async {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      try {
+        await _auth.signInWithEmailAndPassword(
+            email: _email, password: _password);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => DashboardScreen()),
+        );
+      } catch (e) {
+        // Handle login error
+        print('Login error: $e');
+        // Show an error dialog or toast message
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -26,13 +56,12 @@ class LoginScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Image.asset('assets/images/logo.jpg',
-                  height: size.height * 0.2), // Set the desired height
+              Image.asset('assets/images/logo.jpg', height: size.height * 0.2),
               Text(
                 'Welcome Back,',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 20, // Choose an appropriate size for Headline1
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -42,8 +71,8 @@ class LoginScreen extends StatelessWidget {
                   fontSize: 16,
                 ),
               ),
-
               Form(
+                key: _formKey,
                 child: Container(
                   padding: const EdgeInsets.symmetric(vertical: 20.0),
                   child: Column(
@@ -56,6 +85,15 @@ class LoginScreen extends StatelessWidget {
                           hintText: 'Email',
                           border: OutlineInputBorder(),
                         ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your email';
+                          }
+                          return null;
+                        },
+                        onSaved: (value) {
+                          _email = value!;
+                        },
                       ),
                       const SizedBox(height: 20.0),
                       TextFormField(
@@ -69,6 +107,16 @@ class LoginScreen extends StatelessWidget {
                             icon: Icon(Icons.remove_red_eye_sharp),
                           ),
                         ),
+                        obscureText: true,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your password';
+                          }
+                          return null;
+                        },
+                        onSaved: (value) {
+                          _password = value!;
+                        },
                       ),
                       const SizedBox(height: 20),
                       Align(
@@ -196,16 +244,7 @@ class LoginScreen extends StatelessWidget {
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (BuildContext content) {
-                                  return DashboardScreen();
-                                },
-                              ),
-                            );
-                          },
+                          onPressed: _signInWithEmailAndPassword,
                           child: Text('LOGIN'),
                         ),
                       ),
@@ -225,7 +264,9 @@ class LoginScreen extends StatelessWidget {
                     child: OutlinedButton.icon(
                       icon: Image.asset('assets/images/google-logo.png',
                           width: 50.0),
-                      onPressed: () {},
+                      onPressed: () {
+                        // Implement Google Sign-In functionality here
+                      },
                       label: Text('Sign In With Google'),
                     ),
                   ),
