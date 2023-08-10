@@ -1,15 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-class CalendarScreen extends StatefulWidget {
+void main() => runApp(MyApp());
+
+class MyApp extends StatelessWidget {
   @override
-  _CalendarScreenState createState() => _CalendarScreenState();
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      theme: ThemeData(
+        primarySwatch: Colors.green,
+      ),
+      home: HomeCalendarPage(),
+    );
+  }
 }
 
-class _CalendarScreenState extends State<CalendarScreen> {
+class HomeCalendarPage extends StatefulWidget {
+  @override
+  _HomeCalendarPageState createState() => _HomeCalendarPageState();
+}
+
+class _HomeCalendarPageState extends State<HomeCalendarPage> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
-  DateTime _selectedDay = DateTime.now();
   DateTime _focusedDay = DateTime.now();
+  DateTime _selectedDay = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
@@ -20,24 +34,22 @@ class _CalendarScreenState extends State<CalendarScreen> {
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: <Widget>[
             TableCalendar(
-              firstDay: DateTime.utc(2022, 01, 01),
-              lastDay: DateTime.utc(2022, 12, 31),
-              focusedDay: _focusedDay,
               calendarFormat: _calendarFormat,
+              focusedDay: _focusedDay,
+              firstDay: DateTime(2000),
+              lastDay: DateTime(2050),
               selectedDayPredicate: (day) {
-                // Use this to show/hide an event dot
                 return isSameDay(_selectedDay, day);
               },
               onDaySelected: (selectedDay, focusedDay) {
                 setState(() {
                   _selectedDay = selectedDay;
-                  _focusedDay = focusedDay;
+                  _focusedDay = focusedDay; // update `_focusedDay` here as well
                 });
               },
-            ),
-            // Add other calendar-related components or events here
+            )
           ],
         ),
       ),

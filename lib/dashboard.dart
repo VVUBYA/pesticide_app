@@ -11,6 +11,8 @@ import 'recent_activity.dart';
 import 'usage_tracker.dart';
 import 'weather.dart';
 import 'activity_logger.dart';
+import 'calender.dart';
+import 'treatment.dart';
 
 void main() {
   runApp(MyApp());
@@ -90,7 +92,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       icon: Icon(Icons.calendar_today,
                           color: Colors.white, size: 40),
                       onPressed: () {
-                        _showCalendar(context); // Show the calendar as a pop-up
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (BuildContext content) {
+                              return HomeCalendarPage();
+                            },
+                          ),
+                        );
+                        // Show the calendar as a pop-up
                       },
                     ),
                   ],
@@ -107,10 +117,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
               padding: EdgeInsets.all(16),
               children: [
                 DashboardCard(
-                  title: 'Safety Tips',
+                  title: 'Tips',
                   icon: Icons.lightbulb_outline,
                   onTap: () {
-                    ActivityLogger.logActivity('Navigated to safety tips');
+                    ActivityLogger.logActivity('Navigated to tips');
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -140,11 +150,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   },
                 ),
                 DashboardCard(
-                  title: 'Pesticide Tracker',
+                  title: 'Feild Tracker',
                   icon: Icons.list_alt,
                   onTap: () {
-                    ActivityLogger.logActivity(
-                        'Navigated to Pesticide Tracker');
+                    ActivityLogger.logActivity('Navigated to Field Tracker');
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -156,11 +165,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   },
                 ),
                 DashboardCard(
-                  title: 'Safety Guidelines',
+                  title: 'Treatments',
                   icon: Icons.file_copy_outlined,
                   onTap: () {
-                    ActivityLogger.logActivity(
-                        'Navigated to Safety Guidelines');
+                    ActivityLogger.logActivity('Navigated to Treatments');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (BuildContext content) {
+                          return TreatmentsScreen();
+                        },
+                      ),
+                    );
 
                     // Implement navigation to safety guidelines screen
                     // Navigator.push(context, MaterialPageRoute(builder: (context) => SafetyGuidelinesScreen()));
@@ -202,32 +218,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     // Navigator.push(context, MaterialPageRoute(builder: (context) => WeatherUpdatesScreen()));
                   },
                 ),
-                DashboardCard(
-                  title: 'Notifications',
-                  icon: Icons.notifications,
-                  onTap: () {
-                    ActivityLogger.logActivity('Navigated to Notifications');
 
-                    // Implement navigation to notifications screen
-                    // Navigator.push(context, MaterialPageRoute(builder: (context) => NotificationsScreen()));
-                  },
-                ),
-                DashboardCard(
-                  title: 'Emergency Contacts',
-                  icon: Icons.phone,
-                  onTap: () {
-                    ActivityLogger.logActivity(
-                        'Navigated to Emergency Contacts');
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (BuildContext content) {
-                          return EmergencyContactsScreen();
-                        },
-                      ),
-                    );
-                  },
-                ),
                 // Add other DashboardCards here
               ],
             ),

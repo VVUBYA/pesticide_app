@@ -21,6 +21,11 @@ class MyApp extends StatelessWidget {
 class TipsPage extends StatelessWidget {
   List<Info> infos = [
     Info(
+      title: 'Safe Pesticide Use',
+      subtitle:
+          'Always wear protective gear when handling pesticides.\nKeep pesticides out of reach of children and pets.\nRead and follow the instructions on the pesticide label.\nDispose of empty pesticide containers properly.\nStore pesticides in a cool, dry place.\nAvoid applying pesticides in windy conditions.',
+    ),
+    Info(
         title: 'Irrigation Water Supply Augmentation and Management',
         subtitle:
             'By using sprinkler irrigation systems you can increase crop yields up to 50%. If the crops get too much water, the roots can rot, and the crops will not get enough oxygen from the soil. So, the surplus of water on fields can equally affect the overall growth and development of crops directly and also its yield and quality.'),
@@ -106,7 +111,7 @@ class TipsPage extends StatelessWidget {
         title: Text(
           'Crop Management Tips',
           style: GoogleFonts.poppins(
-            fontSize: 24,
+            fontSize: 15,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -123,7 +128,7 @@ class TipsPage extends StatelessWidget {
                 child: Text(
                   'Helpful Tips for Crop Management',
                   style: GoogleFonts.poppins(
-                    fontSize: 28,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                 ),

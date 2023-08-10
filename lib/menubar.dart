@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart'; // Import FirebaseAuth
 import 'login.dart';
 import 'userprofile.dart';
 import 'signup.dart';
+import 'emergency_contacts.dart';
 
 class MenuBarScreen extends StatelessWidget {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -89,6 +90,25 @@ class _MenuBarState extends State<CustomMenuBar> {
               Navigator.of(context).pushReplacement(MaterialPageRoute(
                 builder: (context) => LoginScreen(),
               ));
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.notifications),
+            title: Text("Notifications"),
+            onTap: () {},
+          ),
+          ListTile(
+            leading: Icon(Icons.phone),
+            title: Text("Emergency Contacts"),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (BuildContext content) {
+                    return EmergencyContactsScreen();
+                  },
+                ),
+              );
             },
           ),
         ],
