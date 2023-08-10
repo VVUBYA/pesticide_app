@@ -33,6 +33,9 @@ dependencies:
   url_launcher: ^6.0.10
   http: ^0.13.3
   html: ^0.15.0
+  google_fonts: any
+  flutter_gradient_colors: ^2.1.1
+  geolocator: ^7.7.0
   
 
 dev_dependencies:

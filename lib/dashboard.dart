@@ -115,7 +115,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       context,
                       MaterialPageRoute(
                         builder: (BuildContext content) {
-                          return SafetyTipsScreen();
+                          return TipsPage();
                         },
                       ),
                     );
@@ -149,7 +149,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       context,
                       MaterialPageRoute(
                         builder: (BuildContext content) {
-                          return PesticideTrackerScreen();
+                          return FarmManagementScreen();
                         },
                       ),
                     );
@@ -194,7 +194,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       context,
                       MaterialPageRoute(
                         builder: (BuildContext content) {
-                          return WeatherUpdatesScreen();
+                          return Weather();
                         },
                       ),
                     );
