@@ -1,9 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // Import FirebaseAuth
+import 'package:firebase_auth/firebase_auth.dart';
 import 'login.dart';
 import 'userprofile.dart';
 import 'signup.dart';
 import 'emergency_contacts.dart';
+
+void main() => runApp(MyApp());
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      theme: ThemeData(
+        primarySwatch: Colors.green,
+      ),
+      home: MenuBarScreen(),
+    );
+  }
+}
 
 class MenuBarScreen extends StatelessWidget {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -29,14 +43,22 @@ class CustomMenuBar extends StatefulWidget {
 }
 
 class _MenuBarState extends State<CustomMenuBar> {
-  String? userId; // Define userId variable
+  String? userId;
+  String? displayName;
 
   @override
   void initState() {
     super.initState();
-    // Get the current user's ID when the menu bar is created
+    getUserInfo();
+  }
+
+  Future<void> getUserInfo() async {
     if (widget.auth.currentUser != null) {
-      userId = widget.auth.currentUser!.uid;
+      User user = widget.auth.currentUser!;
+      userId = user.uid;
+      await user.reload();
+      displayName = user.displayName;
+      setState(() {});
     }
   }
 
@@ -58,7 +80,7 @@ class _MenuBarState extends State<CustomMenuBar> {
                   ),
                   SizedBox(height: 10),
                   Text(
-                    "User Name",
+                    displayName ?? "User Name",
                     style: TextStyle(fontSize: 18, color: Colors.white),
                   ),
                 ],
