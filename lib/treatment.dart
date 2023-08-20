@@ -86,6 +86,7 @@ class EntryTile extends StatelessWidget {
 }
 
 class AddSprayEntryScreen extends StatefulWidget {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   @override
   _AddSprayEntryScreenState createState() => _AddSprayEntryScreenState();
 }
