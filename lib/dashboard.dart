@@ -133,7 +133,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   },
                 ),
                 DashboardCard(
-                  title: 'Recent Activities',
+                  title: 'Report',
                   icon: Icons.history,
                   onTap: () {
                     ActivityLogger.logActivity(
@@ -142,7 +142,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       context,
                       MaterialPageRoute(
                         builder: (BuildContext content) {
-                          return RecentActivitiesScreen();
+                          return SprayDiaryPage();
                         },
                       ),
                     );

@@ -38,12 +38,7 @@ class SprayDiaryPage extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    'The week of 14-20 Aug 2023',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 10),
-                  Text('No entries found for this period'),
+                  Text('No entries found'),
                 ],
               ),
             );
@@ -126,10 +121,56 @@ class _AddSprayEntryScreenState extends State<AddSprayEntryScreen> {
   String growthStage = '';
   String sprayUnit = '';
   double numTanksSprayed = 0;
+  String selectedCrop = ''; // Selected crop from the list
+  String selectedField = ''; // Selected field from the list
 
-  void _saveEntry() async {
+  List<String> cropList = []; // List of crops
+  List<String> fieldList = []; // List of fields
+
+  @override
+  void initState() {
+    super.initState();
+    fetchCropList();
+    fetchFieldList();
+  }
+
+  Future<void> fetchCropList() async {
     try {
-      await FirebaseFirestore.instance.collection('sprayEntries').add({
+      QuerySnapshot querySnapshot =
+          await FirebaseFirestore.instance.collection('crops').get();
+      setState(() {
+        cropList =
+            querySnapshot.docs.map((doc) => doc.get('name') as String).toList();
+      });
+    } catch (e) {
+      print('Error fetching crop list: $e');
+    }
+  }
+
+  Future<void> fetchFieldList() async {
+    try {
+      QuerySnapshot querySnapshot =
+          await FirebaseFirestore.instance.collection('fields').get();
+      setState(() {
+        fieldList =
+            querySnapshot.docs.map((doc) => doc.get('name') as String).toList();
+      });
+    } catch (e) {
+      print('Error fetching field list: $e');
+    }
+  }
+
+  Future<void> addFieldData() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('sprayEntries')
+          .add({
         'direction': windDirection,
         'status': sprayStatus,
         'startdate': startDate,
@@ -157,12 +198,23 @@ class _AddSprayEntryScreenState extends State<AddSprayEntryScreen> {
         'description': targetDescription,
         'apron': apronChecked,
         'boots': bootsChecked,
-        'any': anyRain,
+        'any rain': anyRain,
       });
 
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Spray entry added successfully'),
+        ),
+      );
+
       Navigator.pop(context); // Close the entry screen
-    } catch (error) {
-      print('Error saving entry: $error');
+    } catch (e) {
+      print('Error adding spray entry: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('An error occurred. Please try again later.'),
+        ),
+      );
     }
   }
 
@@ -170,11 +222,11 @@ class _AddSprayEntryScreenState extends State<AddSprayEntryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add New Spray Entry'),
+        title: Text(''),
         actions: [
           TextButton(
             onPressed: () {
-              // TODO: Save changes logic
+              addFieldData(); // Call addFieldData when Save Changes is pressed
             },
             child: Text(
               'Save Changes',
@@ -219,7 +271,11 @@ class _AddSprayEntryScreenState extends State<AddSprayEntryScreen> {
                 finishDate = date;
               });
             }),
-            _buildCheckBox('Neighbors Notified', neighborsNotified),
+            _buildCheckBox('Neighbors Notified', neighborsNotified, (newValue) {
+              setState(() {
+                neighborsNotified = newValue ?? false;
+              });
+            }),
             _buildTextField('Comments/Observation', observation),
             _buildTextField('Instructions', instructions),
             SizedBox(height: 20),
@@ -234,20 +290,56 @@ class _AddSprayEntryScreenState extends State<AddSprayEntryScreen> {
               'Operator Safety',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            //_buildCheckBox('Glasses/Goggles', glassesChecked, (value) {
-            //setState(() {
-            //glassesChecked = false;
-            //});
-            //}),
-            _buildCheckBox('Gloves', glovesChecked),
-            _buildCheckBox('Hat', hatChecked),
-            _buildCheckBox('Boots', bootsChecked),
-            _buildCheckBox('Respirator/Mask', respiratorChecked),
-            _buildCheckBox('Overalls', overallsChecked),
-            _buildCheckBox('Spraysuit', spraysuitChecked),
-            _buildCheckBox('First Aid Kit', firstAidKitChecked),
-            _buildCheckBox('Apron', apronChecked),
-            _buildCheckBox('Safe Helmet', safeHelmetChecked),
+            _buildCheckBox('Glasses/Goggles', glassesChecked, (value) {
+              setState(() {
+                glassesChecked = false;
+              });
+            }),
+            _buildCheckBox('Gloves', glovesChecked, (newValue) {
+              setState(() {
+                glovesChecked = newValue ?? false;
+              });
+            }),
+            _buildCheckBox('Hat', hatChecked, (newValue) {
+              setState(() {
+                hatChecked = newValue ?? false;
+              });
+            }),
+            _buildCheckBox('Boots', bootsChecked, (newValue) {
+              setState(() {
+                bootsChecked = newValue ?? false;
+              });
+            }),
+            _buildCheckBox('Respirator/Mask', respiratorChecked, (newValue) {
+              setState(() {
+                respiratorChecked = newValue ?? false;
+              });
+            }),
+            _buildCheckBox('Overalls', overallsChecked, (newValue) {
+              setState(() {
+                overallsChecked = newValue ?? false;
+              });
+            }),
+            _buildCheckBox('Spraysuit', spraysuitChecked, (newValue) {
+              setState(() {
+                spraysuitChecked = newValue ?? false;
+              });
+            }),
+            _buildCheckBox('First Aid Kit', firstAidKitChecked, (newValue) {
+              setState(() {
+                firstAidKitChecked = newValue ?? false;
+              });
+            }),
+            _buildCheckBox('Apron', apronChecked, (newValue) {
+              setState(() {
+                apronChecked = newValue ?? false;
+              });
+            }),
+            _buildCheckBox('Safe Helmet', safeHelmetChecked, (newValue) {
+              setState(() {
+                safeHelmetChecked = newValue ?? false;
+              });
+            }),
             SizedBox(height: 20),
             Text(
               'Target',
@@ -260,22 +352,34 @@ class _AddSprayEntryScreenState extends State<AddSprayEntryScreen> {
               'Weather Conditions',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            _buildWeatherButton(),
             _buildNumericField('Temperature (°C)', temperature),
             _buildNumericField('Humidity (%)', humidity),
             _buildNumericField('Cloud Cover (%)', cloudCover),
             _buildNumericField('Wind Speed (km/h)', windSpeed),
-            _buildDropdown('Wind Direction', windDirection, [
-              'North',
-              'Northeast',
-              'East',
-              'Southeast',
-              'South',
-              'Southwest',
-              'West',
-              'Northwest',
-            ]),
-            _buildCheckBox('Any Rain?', anyRain),
+            _buildDropdown(
+              'Wind Direction',
+              windDirection,
+              [
+                'North',
+                'Northeast',
+                'East',
+                'Southeast',
+                'South',
+                'Southwest',
+                'West',
+                'Northwest',
+              ],
+              (newValue) {
+                setState(() {
+                  windDirection = newValue ?? '';
+                });
+              },
+            ),
+            _buildCheckBox('Any Rain?', anyRain, (newValue) {
+              setState(() {
+                anyRain = newValue ?? false;
+              });
+            }),
             SizedBox(height: 20),
             Text(
               'Spray Sites',
@@ -358,16 +462,16 @@ class _AddSprayEntryScreenState extends State<AddSprayEntryScreen> {
     );
   }
 
-  Widget _buildCheckBox(String label, bool value) {
+  Widget _buildCheckBox(
+    String label,
+    bool? value,
+    void Function(bool?) onChanged,
+  ) {
     return Row(
       children: [
         Checkbox(
-          value: value,
-          onChanged: (newValue) {
-            setState(() {
-              value = newValue ?? false;
-            });
-          },
+          value: value ?? false,
+          onChanged: onChanged,
         ),
         Text(label),
       ],
@@ -422,7 +526,12 @@ class _AddSprayEntryScreenState extends State<AddSprayEntryScreen> {
   }
 
   Widget _buildDropdown(
-      String label, String currentValue, List<String> options) {
+    String label,
+    String? currentValue, // Change the type to nullable String
+    List<String> options,
+    void Function(String?)
+        onChanged, // Change the argument type to void Function(String?)
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -433,11 +542,7 @@ class _AddSprayEntryScreenState extends State<AddSprayEntryScreen> {
         SizedBox(height: 8),
         DropdownButton<String>(
           value: currentValue,
-          onChanged: (newValue) {
-            setState(() {
-              currentValue = newValue ?? '';
-            });
-          },
+          onChanged: onChanged,
           items: options.map((option) {
             return DropdownMenuItem<String>(
               value: option,
@@ -445,21 +550,6 @@ class _AddSprayEntryScreenState extends State<AddSprayEntryScreen> {
             );
           }).toList(),
         ),
-      ],
-    );
-  }
-
-  Widget _buildWeatherButton() {
-    return Row(
-      children: [
-        ElevatedButton(
-          onPressed: () {
-            // TODO: Implement weather access
-          },
-          child: Text('Get Weather'),
-        ),
-        SizedBox(width: 10),
-        Text('Weather data will be displayed here'),
       ],
     );
   }

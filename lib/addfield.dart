@@ -31,14 +31,10 @@ class _AddFieldPageState extends State<AddFieldPage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               TextFormField(
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a field name';
-                  }
-                  return null;
-                },
-                onSaved: (value) {
-                  _fieldName = value;
+                onChanged: (value) {
+                  setState(() {
+                    _fieldName = value;
+                  });
                 },
                 decoration: InputDecoration(labelText: 'Field Name'),
               ),
