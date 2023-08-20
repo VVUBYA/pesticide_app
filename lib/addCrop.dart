@@ -2,6 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+class Crop {
+  final String id;
+  final String name;
+  final DateTime datePlanted;
+  final String field;
+  final double quantityPlanted;
+  final double maturityDays;
+
+  Crop({
+    required this.id,
+    required this.name,
+    required this.datePlanted,
+    required this.field,
+    required this.quantityPlanted,
+    required this.maturityDays,
+  });
+}
+
 class PesticideDatabaseScreen extends StatefulWidget {
   @override
   _PesticideDatabaseScreenState createState() =>
@@ -17,27 +35,14 @@ class _PesticideDatabaseScreenState extends State<PesticideDatabaseScreen> {
   double? _quantityPlanted;
   double? _maturityDays;
 
-  List<String> cropNames = [];
   List<String> fieldNames = [];
+
+  String userId = FirebaseAuth.instance.currentUser!.uid;
 
   @override
   void initState() {
     super.initState();
-    fetchCropNames();
     fetchFieldNames();
-  }
-
-  Future<void> fetchCropNames() async {
-    try {
-      QuerySnapshot querySnapshot =
-          await FirebaseFirestore.instance.collection('crop').get();
-      setState(() {
-        cropNames =
-            querySnapshot.docs.map((doc) => doc.get('name') as String).toList();
-      });
-    } catch (e) {
-      print('Error fetching crop names: $e');
-    }
   }
 
   Future<void> fetchFieldNames() async {
@@ -59,19 +64,16 @@ class _PesticideDatabaseScreenState extends State<PesticideDatabaseScreen> {
     }
 
     try {
-      String userId =
-          FirebaseAuth.instance.currentUser!.uid; // Get current user's ID
-
       await FirebaseFirestore.instance
           .collection('users')
           .doc(userId)
           .collection('crops')
           .add({
         'name': _selectedCropName,
-        'date planted': _selectedPlantingDate,
+        'datePlanted': _selectedPlantingDate,
         'field': _selectedField,
-        'quantity planted': _quantityPlanted,
-        'days to maturity': _maturityDays,
+        'quantityPlanted': _quantityPlanted,
+        'maturityDays': _maturityDays,
         // Add other fields from your Firestore structure here
       });
 
@@ -82,7 +84,6 @@ class _PesticideDatabaseScreenState extends State<PesticideDatabaseScreen> {
       );
 
       _formKey.currentState!.reset();
-      Navigator.pop(context); // Redirect back to the previous screen
     } catch (e) {
       print('Error adding crop data: $e');
       ScaffoldMessenger.of(context).showSnackBar(
@@ -106,18 +107,10 @@ class _PesticideDatabaseScreenState extends State<PesticideDatabaseScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              DropdownButtonFormField<String>(
-                value: _selectedCropName,
-                items: cropNames
-                    .map((cropName) => DropdownMenuItem(
-                          value: cropName,
-                          child: Text(cropName),
-                        ))
-                    .toList(),
+              TextFormField(
                 onChanged: (value) {
                   setState(() {
                     _selectedCropName = value;
-                    // Fetch varieties for selected crop
                   });
                 },
                 decoration: InputDecoration(labelText: 'Crop Name'),

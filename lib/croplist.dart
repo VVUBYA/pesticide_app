@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'pesticide_identfication_section.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() {
   runApp(MyApp());
@@ -94,47 +96,129 @@ class FieldListCard extends StatelessWidget {
   }
 }
 
+class PesticideListCard extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 3,
+      margin: EdgeInsets.all(16),
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => SprayProductsPage()),
+          );
+        },
+        child: Container(
+          padding: EdgeInsets.all(20),
+          child: Column(
+            children: [
+              Icon(Icons.grass, size: 100, color: Colors.green),
+              SizedBox(height: 20),
+              Text('Spray Products', style: TextStyle(fontSize: 20)),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class CropListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
         title: Text('Crop List'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.search),
-            onPressed: () {
-              // Handle search
-            },
-          ),
-        ],
       ),
-      body: Column(
-        children: [
-          SizedBox(height: MediaQuery.of(context).size.height * 0.2),
-          Center(
-            child: Text('No crops added yet!', style: TextStyle(fontSize: 20)),
-          ),
-          SizedBox(height: 20),
-          ElevatedButton.icon(
-            onPressed: () {
-              // Handle add crop
-            },
-            icon: Icon(Icons.add),
-            label: Text('Add'),
-            style: ElevatedButton.styleFrom(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30.0),
+      body: CropList(),
+    );
+  }
+}
+
+class CropList extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance.collection('crops').snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Center(
+            child: Text('Error: ${snapshot.error}'),
+          );
+        }
+
+        if (!snapshot.hasData) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+
+        List<QueryDocumentSnapshot> cropDocs = snapshot.data!.docs;
+
+        if (cropDocs.isEmpty) {
+          return Center(
+            child: Text('No crops added yet!'),
+          );
+        }
+
+        return ListView.builder(
+          itemCount: cropDocs.length,
+          itemBuilder: (context, index) {
+            Map<String, dynamic> cropData =
+                cropDocs[index].data() as Map<String, dynamic>;
+
+            return ListTile(
+              title: Text(cropData['name'] ?? 'Unknown Crop'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CropDetailsPage(cropData: cropData),
+                  ),
+                );
+              },
+              trailing: IconButton(
+                icon: Icon(Icons.delete),
+                onPressed: () async {
+                  await FirebaseFirestore.instance
+                      .collection('crops')
+                      .doc(cropDocs[index].id)
+                      .delete();
+                },
               ),
-            ),
-          ),
-        ],
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
+class CropDetailsPage extends StatelessWidget {
+  final Map<String, dynamic> cropData;
+
+  CropDetailsPage({required this.cropData});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Crop Details'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Crop Name: ${cropData['name']}'),
+            Text('Date Planted: ${cropData['datePlanted']}'),
+            Text('Field: ${cropData['field']}'),
+            Text('Quantity Planted: ${cropData['quantityPlanted']}'),
+            Text('Days to Maturity: ${cropData['daysToMaturity']}'),
+            // Add other fields here
+          ],
+        ),
       ),
     );
   }

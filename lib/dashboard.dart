@@ -13,6 +13,7 @@ import 'weather.dart';
 import 'activity_logger.dart';
 import 'calender.dart';
 import 'treatment.dart';
+import 'pesticideIdentification.dart';
 
 void main() {
   runApp(MyApp());
@@ -165,7 +166,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   },
                 ),
                 DashboardCard(
-                  title: 'Treatments',
+                  title: 'Spray Records',
                   icon: Icons.file_copy_outlined,
                   onTap: () {
                     ActivityLogger.logActivity('Navigated to Treatments');
@@ -173,7 +174,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       context,
                       MaterialPageRoute(
                         builder: (BuildContext content) {
-                          return TreatmentsScreen();
+                          return SprayDiaryPage();
                         },
                       ),
                     );

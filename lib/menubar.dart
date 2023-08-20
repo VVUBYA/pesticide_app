@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'login.dart';
 import 'userprofile.dart';
 import 'signup.dart';
@@ -43,97 +44,107 @@ class CustomMenuBar extends StatefulWidget {
 }
 
 class _MenuBarState extends State<CustomMenuBar> {
-  String? userId;
-  String? displayName;
+  User? currentUser;
+  late Future<DocumentSnapshot> userSnapshot;
 
   @override
   void initState() {
     super.initState();
-    getUserInfo();
+    currentUser = widget.auth.currentUser;
+    userSnapshot = getUserInfo(currentUser?.uid);
   }
 
-  Future<void> getUserInfo() async {
-    if (widget.auth.currentUser != null) {
-      User user = widget.auth.currentUser!;
-      userId = user.uid;
-      await user.reload();
-      displayName = user.displayName;
-      setState(() {});
+  Future<DocumentSnapshot> getUserInfo(String? userId) async {
+    if (userId != null) {
+      return FirebaseFirestore.instance.collection('users').doc(userId).get();
     }
+    throw Exception("User ID is null");
   }
 
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      child: Column(
-        children: [
-          Container(
-            height: MediaQuery.of(context).size.height * 0.3,
-            color: Colors.blue,
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircleAvatar(
-                    radius: 50,
-                    // Display user profile image here
+      child: FutureBuilder<DocumentSnapshot>(
+        future: userSnapshot,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return CircularProgressIndicator();
+          } else if (snapshot.hasError) {
+            return Text('Error loading user data');
+          } else {
+            var displayName = snapshot.data?['displayName'] ?? 'User Name';
+            return Column(
+              children: [
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.3,
+                  color: Colors.blue,
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircleAvatar(
+                          radius: 50,
+                          // Display user profile image here
+                        ),
+                        SizedBox(height: 10),
+                        Text(
+                          displayName,
+                          style: TextStyle(fontSize: 18, color: Colors.white),
+                        ),
+                      ],
+                    ),
                   ),
-                  SizedBox(height: 10),
-                  Text(
-                    displayName ?? "User Name",
-                    style: TextStyle(fontSize: 18, color: Colors.white),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          ListTile(
-            leading: Icon(Icons.person),
-            title: Text("Profile"),
-            onTap: () {
-              if (userId != null) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (BuildContext context) {
-                      return ProfileScreen(userId: userId!);
-                    },
-                  ),
-                );
-              }
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.logout),
-            title: Text("Logout"),
-            onTap: () async {
-              await widget.auth.signOut();
-              Navigator.of(context).pop();
-              Navigator.of(context).pushReplacement(MaterialPageRoute(
-                builder: (context) => LoginScreen(),
-              ));
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.notifications),
-            title: Text("Notifications"),
-            onTap: () {},
-          ),
-          ListTile(
-            leading: Icon(Icons.phone),
-            title: Text("Emergency Contacts"),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (BuildContext content) {
-                    return EmergencyContactsScreen();
+                ),
+                ListTile(
+                  leading: Icon(Icons.person),
+                  title: Text("Profile"),
+                  onTap: () {
+                    if (currentUser?.uid != null) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (BuildContext context) {
+                            return ProfileScreen(userId: currentUser!.uid);
+                          },
+                        ),
+                      );
+                    }
                   },
                 ),
-              );
-            },
-          ),
-        ],
+                ListTile(
+                  leading: Icon(Icons.logout),
+                  title: Text("Logout"),
+                  onTap: () async {
+                    await widget.auth.signOut();
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (context) => LoginScreen(),
+                    ));
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.notifications),
+                  title: Text("Notifications"),
+                  onTap: () {},
+                ),
+                ListTile(
+                  leading: Icon(Icons.phone),
+                  title: Text("Emergency Contacts"),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (BuildContext content) {
+                          return EmergencyContactsScreen();
+                        },
+                      ),
+                    );
+                  },
+                ),
+              ],
+            );
+          }
+        },
       ),
     );
   }

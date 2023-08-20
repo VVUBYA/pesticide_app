@@ -35,7 +35,7 @@ dependencies:
   html: ^0.15.0
   google_fonts: any
   flutter_gradient_colors: ^2.1.1
-  geolocator: ^7.7.0
+  geolocator: ^9.0.2
   syncfusion_flutter_calendar: ^21.1.41
   
 

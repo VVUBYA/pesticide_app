@@ -53,10 +53,10 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyC65db59i51Oz9vrG2eL1JfPDeiGAM9FgA',
-    appId: '1:561438017487:android:25a54d463368ea9a56f4ba',
-    messagingSenderId: '561438017487',
-    projectId: 'pesticides-dd824',
-    storageBucket: 'pesticides-dd824.appspot.com'
+    apiKey: 'AIzaSyCzh8iq16PVnfWSuKJ-zhTHXB8umRXUEPw',
+    appId: '1:721301914101:android:85f69637f98ef65235a0bc',
+    messagingSenderId: '721301914101',
+    projectId: 'mine-aa874',
+    storageBucket: 'mine-aa874.appspot.com'
   );
 }

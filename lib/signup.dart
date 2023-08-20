@@ -39,7 +39,7 @@ class SignUpScreen extends StatelessWidget {
           context,
           MaterialPageRoute(
             builder: (context) =>
-                ProfileScreen(userId: userCredential.user!.uid),
+                LoginScreen(), // Replace with your LoginScreen widget
           ),
         );
       } catch (e) {
@@ -63,7 +63,7 @@ class SignUpScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Image.asset('assets/images/logo.jpg',
+              Image.asset('assets/images/logo.PNG',
                   height: size.height * 0.2), // Set the desired height
               Text(
                 'Get On Board!',
@@ -146,19 +146,6 @@ class SignUpScreen extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const Text('OR'),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton.icon(
-                      icon: Image.asset('assets/images/google-logo.png',
-                          width: 50.0),
-                      onPressed: () {},
-                      label: Text('SIGN UP WITH GOOGLE'),
-                    ),
-                  ),
                   const SizedBox(
                     height: 10,
                   ),

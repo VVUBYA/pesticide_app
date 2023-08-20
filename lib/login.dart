@@ -56,7 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Image.asset('assets/images/logo.jpg', height: size.height * 0.2),
+              Image.asset('assets/images/logo.PNG', height: size.height * 0.2),
               Text(
                 'Welcome Back,',
                 textAlign: TextAlign.center,
@@ -255,21 +255,6 @@ class _LoginScreenState extends State<LoginScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const Text('OR'),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton.icon(
-                      icon: Image.asset('assets/images/google-logo.png',
-                          width: 50.0),
-                      onPressed: () {
-                        // Implement Google Sign-In functionality here
-                      },
-                      label: Text('Sign In With Google'),
-                    ),
-                  ),
                   const SizedBox(
                     height: 10,
                   ),

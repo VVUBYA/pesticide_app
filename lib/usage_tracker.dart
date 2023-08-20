@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'addCrop.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'addfield.dart';
+import 'pesticide_identfication_section.dart';
 
 void main() {
   runApp(MyApp());
@@ -60,6 +61,12 @@ class FarmManagementScreen extends StatelessWidget {
             ],
           ),
           SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              SprayProductListCard(),
+            ],
+          ),
           // Add other sections here
         ],
       ),
@@ -115,6 +122,38 @@ class FieldListCard extends StatelessWidget {
               Icon(Icons.landscape, size: 100, color: Colors.brown),
               SizedBox(height: 20),
               Text('Field List', style: TextStyle(fontSize: 20)),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class SprayProductListCard extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 3,
+      margin: EdgeInsets.all(16),
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (BuildContext content) {
+                return SprayProductsPage();
+              },
+            ),
+          );
+        },
+        child: Container(
+          padding: EdgeInsets.all(20),
+          child: Column(
+            children: [
+              Icon(Icons.dangerous, size: 100, color: Colors.brown),
+              SizedBox(height: 20),
+              Text('Spray Products List', style: TextStyle(fontSize: 20)),
             ],
           ),
         ),

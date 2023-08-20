@@ -42,7 +42,7 @@ class _SplashScreen extends State<SplashScreen> {
                     child: SizedBox(
                         height: 200,
                         width: 200,
-                        child: Image.asset("assets/images/logo.jpg")),
+                        child: Image.asset("assets/images/logo.PNG")),
                   ),
                   Container(
                     margin: EdgeInsets.only(top: 30),

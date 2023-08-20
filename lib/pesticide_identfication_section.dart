@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() {
   runApp(MyApp());
@@ -8,211 +10,292 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Pesticide Identification',
-      home: PesticideIdentificationPage(),
+      title: 'Spray Products Page',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: SprayProductsPage(),
     );
   }
 }
 
-class Pesticide {
-  final String name;
-  final String category;
-  final String imageURL;
-  final String description;
-  final List<String> usage;
-
-  Pesticide({
-    required this.name,
-    required this.category,
-    required this.imageURL,
-    required this.description,
-    required this.usage,
-  });
-}
-
-class PesticideIdentificationPage extends StatefulWidget {
-  @override
-  _PesticideIdentificationPageState createState() =>
-      _PesticideIdentificationPageState();
-}
-
-class _PesticideIdentificationPageState
-    extends State<PesticideIdentificationPage> {
-  final List<Pesticide> allPesticides = [
-    Pesticide(
-      name: "24D-AMINE-720 G/L",
-      category: "Herbicides",
-      imageURL:
-          "https://bukoolachemicals.com/wp-content/uploads/2023/05/24D-01-01.png",
-      description:
-          "Selective systemic herbicide readily absorbed by foliage accumulating at growing points of shoots and roots to inhibit further growth of...",
-      usage: [
-        "2,4-D is used for post-emergence control of annual and perennial broadleaved weeds in cereals, grasslands, established turf, and aquatic weeds.",
-        "Application:",
-        "In the mixture, use 30-50ml per 20L",
-        "For brushes and shrubs in pastures, use 100-150ml per 20 Liters of water",
-        "For pre-emergence in Sugarcane, use 200ml per 20L"
-      ],
-    ),
-    Pesticide(
-      name: "AGRi GOLD",
-      category: "Fungicides",
-      imageURL:
-          "https://bukoolachemicals.com/wp-content/uploads/2023/06/AgriGold.jpg",
-      description:
-          "A wonder product that prevents flower shedding, promotes more flower formation and bumper yield while enhancing healthy fruit formation and...",
-      usage: [
-        "A wonder product that prevents flower shedding, promotes more flower formation and bumper yield while enhancing healthy fruit formation and vegetative growth. Agri gold is recommended in all flowering crops like tomatoes, peppers, beans, cotton, coffee",
-      ],
-    ),
-    Pesticide(
-      name: "ALLWIN Top",
-      category: "Herbicides",
-      imageURL:
-          "https://bukoolachemicals.com/wp-content/uploads/2023/06/Alwin-top.jpg",
-      description:
-          "ALLWIN TOP ensures enhanced photosynthetic activity which enables vigor and growth...",
-      usage: [
-        "The enhanced photosynthetic activity enables vigor and growth. Plants start producing its own natural PGR’s",
-        "More flowers, pods, and fruits. Prevents premature dropping of flowers and fruits"
-            "Application:",
-        "Mix 40g per 20L of water and spray on crop foliage.",
-      ],
-    ),
-  ];
-
-  List<Pesticide> displayedPesticides = [];
-
-  @override
-  void initState() {
-    super.initState();
-    displayedPesticides = List.from(allPesticides);
-  }
-
-  void filterPesticides(String query) {
-    setState(() {
-      displayedPesticides = allPesticides.where((pesticide) {
-        final nameLower = pesticide.name.toLowerCase();
-        final categoryLower = pesticide.category.toLowerCase();
-        final descriptionLower = pesticide.description.toLowerCase();
-        final usageLower = pesticide.usage.join(' ').toLowerCase();
-        final searchLower = query.toLowerCase();
-        return nameLower.contains(searchLower) ||
-            categoryLower.contains(searchLower) ||
-            descriptionLower.contains(searchLower) ||
-            usageLower.contains(searchLower);
-      }).toList();
-    });
-  }
+class SprayProductsPage extends StatelessWidget {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Pesticide Identification'),
+        title: Text('Spray Products Page'),
+        actions: [
+          Padding(
+            padding: EdgeInsets.all(8.0),
+            child: CircleAvatar(
+              backgroundColor: Colors.blue,
+              child: Text('VD'), // Replace with user initials
+            ),
+          ),
+        ],
       ),
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              onChanged: (value) => filterPesticides(value),
-              decoration: InputDecoration(
-                labelText: 'Search Pesticides',
-                prefixIcon: Icon(Icons.search),
+            padding: EdgeInsets.all(16.0),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Spray Products',
+                style: TextStyle(
+                  fontSize: 24.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: ElevatedButton(
+                onPressed: () {
+                  _showAddNewEntryDialog(context);
+                },
+                child: Text('Add New Entry'),
               ),
             ),
           ),
           Expanded(
-            child: ListView.builder(
-              itemCount: displayedPesticides.length,
-              itemBuilder: (context, index) {
-                return PesticideCardWidget(displayedPesticides[index]);
-              },
-            ),
+            child: ProductsTable(),
           ),
         ],
       ),
     );
   }
+
+  void _showAddNewEntryDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AddProductDialog();
+      },
+    );
+  }
 }
 
-class PesticideCardWidget extends StatelessWidget {
-  final Pesticide pesticide;
-
-  PesticideCardWidget(this.pesticide);
+class ProductsTable extends StatelessWidget {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
   Widget build(BuildContext context) {
+    final user = _auth.currentUser;
+    if (user == null) {
+      return Center(
+        child: Text('User not authenticated'),
+      );
+    }
+
     return Card(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Image.network(
-            pesticide.imageURL,
-            width: double.infinity,
-            height: 150,
-            fit: BoxFit.cover,
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  pesticide.name,
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                Text(pesticide.category),
-                ElevatedButton(
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) {
-                        return AlertDialog(
-                          title: Text(pesticide.name),
-                          content: SingleChildScrollView(
-                            scrollDirection: Axis.vertical,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.max,
-                              children: [
-                                Image.network(
-                                  pesticide.imageURL,
-                                  width: double.infinity,
-                                  height: 200,
-                                  fit: BoxFit.cover,
-                                ),
-                                SizedBox(height: 16),
-                                Text(pesticide.description),
-                                SizedBox(height: 16),
-                                Text("Usage:",
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold)),
-                                for (String usage in pesticide.usage)
-                                  Text(usage),
-                              ],
-                            ),
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: Text('Close'),
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  },
-                  child: Text('Read more'),
-                ),
+      margin: EdgeInsets.all(16.0),
+      elevation: 4.0,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.uid)
+              .collection('products')
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return Center(
+                child: Text('Error loading data'),
+              );
+            }
+
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+
+            final products = snapshot.data?.docs ?? [];
+
+            return DataTable(
+              columnSpacing: 20.0, // Adjust the spacing between columns
+              columns: [
+                DataColumn(label: Text('Name')),
+                DataColumn(label: Text('Type')),
+                DataColumn(label: Text('Manufacturer')),
+                DataColumn(label: Text('Restrictions')),
               ],
-            ),
-          ),
-        ],
+              rows: products.map((product) {
+                final data = product.data() as Map<String, dynamic>;
+                return DataRow(cells: [
+                  DataCell(Text(data['name'] ?? '')),
+                  DataCell(Text(data['type'] ?? '')),
+                  DataCell(Text(data['manufacturer'] ?? '')),
+                  DataCell(Text(data['restrictions'] ?? '')),
+                ]);
+              }).toList(),
+            );
+          },
+        ),
       ),
     );
+  }
+}
+
+class AddProductDialog extends StatefulWidget {
+  @override
+  _AddProductDialogState createState() => _AddProductDialogState();
+}
+
+class _AddProductDialogState extends State<AddProductDialog> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final _manufacturerController = TextEditingController();
+  final _activeIngredientController = TextEditingController();
+  final _restrictionsController = TextEditingController();
+  String? _selectedType;
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text('Add New Product'),
+      content: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              DropdownButtonFormField<String>(
+                value: _selectedType,
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _selectedType = newValue;
+                  });
+                },
+                items: <String>[
+                  'Adjuvant',
+                  'Fertilizer',
+                  'Fungicide',
+                  'Herbicide',
+                  'Insecticide',
+                  'Nematicide',
+                  'Pesticide',
+                  'Promoter',
+                  'Regulator',
+                  'Seed Treatment',
+                  'Surfactant',
+                  'Wetting Agent',
+                  'Other',
+                ].map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+                decoration: InputDecoration(
+                  labelText: 'Type',
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please select a product type';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: _nameController,
+                decoration: InputDecoration(
+                  labelText: 'Name',
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a product name';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: _manufacturerController,
+                decoration: InputDecoration(
+                  labelText: 'Manufacturer',
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a manufacturer';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: _activeIngredientController,
+                decoration: InputDecoration(
+                  labelText: 'Active Ingredient',
+                ),
+              ),
+              TextFormField(
+                controller: _restrictionsController,
+                decoration: InputDecoration(
+                  labelText: 'Restrictions/Withholding Period',
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () {
+            _saveForm();
+          },
+          child: Text('Save Changes'),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _saveForm() async {
+    final user = _auth.currentUser;
+    if (user == null) {
+      print('User not authenticated');
+      return;
+    }
+
+    if (_formKey.currentState!.validate()) {
+      if (_selectedType != null) {
+        final data = {
+          'type': _selectedType,
+          'name': _nameController.text,
+          'manufacturer': _manufacturerController.text,
+          'activeIngredient': _activeIngredientController.text,
+          'restrictions': _restrictionsController.text,
+        };
+
+        try {
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.uid)
+              .collection('products')
+              .add(data);
+
+          Navigator.of(context).pop(); // Close the dialog after saving
+        } catch (e) {
+          print('Error saving data: $e');
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Please select a product type')),
+        );
+      }
+    }
   }
 }
