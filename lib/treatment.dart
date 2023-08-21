@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,8 +21,12 @@ class SprayDiaryPage extends StatelessWidget {
         title: Text('Spray Diary'),
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream:
-            FirebaseFirestore.instance.collection('sprayEntries').snapshots(),
+        stream: FirebaseFirestore.instance
+            .collection('users')
+            .doc(FirebaseAuth.instance.currentUser?.uid)
+            .collection('sprayEntries')
+            .orderBy('startdate', descending: true)
+            .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return CircularProgressIndicator();
@@ -86,12 +91,13 @@ class EntryTile extends StatelessWidget {
 }
 
 class AddSprayEntryScreen extends StatefulWidget {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   @override
   _AddSprayEntryScreenState createState() => _AddSprayEntryScreenState();
 }
 
 class _AddSprayEntryScreenState extends State<AddSprayEntryScreen> {
+  FirebaseAuth _auth = FirebaseAuth.instance;
+
   String windDirection = 'North';
   String sprayStatus = 'scheduled';
   DateTime? startDate;
@@ -127,10 +133,12 @@ class _AddSprayEntryScreenState extends State<AddSprayEntryScreen> {
 
   List<String> cropList = []; // List of crops
   List<String> fieldList = []; // List of fields
+  var userId;
 
   @override
   void initState() {
     super.initState();
+    userId = _auth.currentUser?.uid;
     fetchCropList();
     fetchFieldList();
   }
@@ -162,10 +170,6 @@ class _AddSprayEntryScreenState extends State<AddSprayEntryScreen> {
   }
 
   Future<void> addFieldData() async {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
-
     try {
       await FirebaseFirestore.instance
           .collection('users')
@@ -181,7 +185,7 @@ class _AddSprayEntryScreenState extends State<AddSprayEntryScreen> {
         'instructions': instructions,
         'operator': operatorName,
         'supervisor': supervisorName,
-        'numtunks': numTanksSprayed,
+        'numtanks': numTanksSprayed,
         'spraysuit': spraysuitChecked,
         'stage': growthStage,
         'target': target,
@@ -199,7 +203,7 @@ class _AddSprayEntryScreenState extends State<AddSprayEntryScreen> {
         'description': targetDescription,
         'apron': apronChecked,
         'boots': bootsChecked,
-        'any rain': anyRain,
+        'anyrain': anyRain,
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
