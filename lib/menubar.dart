@@ -4,6 +4,7 @@ import 'login.dart';
 import 'userprofile.dart';
 import 'signup.dart';
 import 'emergency_contacts.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MenuBarScreen extends StatelessWidget {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -35,10 +36,25 @@ class _MenuBarState extends State<CustomMenuBar> {
   @override
   void initState() {
     super.initState();
-    // Get the current user's ID and display name when the menu bar is created
+    // Get the current user's ID when the menu bar is created
     if (widget.auth.currentUser != null) {
       userId = widget.auth.currentUser!.uid;
-      displayName = widget.auth.currentUser!.displayName;
+      _fetchDisplayName();
+    }
+  }
+
+  Future<void> _fetchDisplayName() async {
+    try {
+      DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
+      if (userSnapshot.exists) {
+        displayName = userSnapshot['name'];
+        setState(() {});
+      }
+    } catch (error) {
+      print('Error fetching user name: $error');
     }
   }
 
