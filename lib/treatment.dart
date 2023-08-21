@@ -13,6 +13,55 @@ void main() async {
   ));
 }
 
+class EntryTile extends StatelessWidget {
+  final Map<String, dynamic> entry;
+  final VoidCallback onTap;
+
+  EntryTile({required this.entry, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: EdgeInsets.all(8),
+      child: ListTile(
+        title: Text(entry['status'] ?? ''),
+        subtitle: Text(entry['target'] ?? ''),
+        onTap: onTap,
+      ),
+    );
+  }
+}
+
+class EntryDetailScreen extends StatelessWidget {
+  final Map<String, dynamic> entry;
+
+  EntryDetailScreen({required this.entry});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Entry Detail'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Status: ${entry['status'] ?? ''}'),
+            Text('Start Date: ${entry['startdate'] ?? ''}'),
+            Text('Finish Date: ${entry['finishdate'] ?? ''}'),
+            Text('Target: ${entry['target'] ?? ''}'),
+            Text('Site: ${entry['site'] ?? ''}'),
+            // Add other fields here
+            // ... Display all other saved information for this entry
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class SprayDiaryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -53,7 +102,17 @@ class SprayDiaryPage extends StatelessWidget {
             itemCount: entries.length,
             itemBuilder: (context, index) {
               final entry = entries[index].data() as Map<String, dynamic>;
-              return EntryTile(entry: entry);
+              return EntryTile(
+                entry: entry,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EntryDetailScreen(entry: entry),
+                    ),
+                  );
+                },
+              );
             },
           );
         },
@@ -68,23 +127,6 @@ class SprayDiaryPage extends StatelessWidget {
           );
         },
         child: Icon(Icons.add),
-      ),
-    );
-  }
-}
-
-class EntryTile extends StatelessWidget {
-  final Map<String, dynamic> entry;
-
-  EntryTile({required this.entry});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.all(8),
-      child: ListTile(
-        title: Text(entry['status'] ?? ''),
-        subtitle: Text(entry['observations'] ?? ''),
       ),
     );
   }
