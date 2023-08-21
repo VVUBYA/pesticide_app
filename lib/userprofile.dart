@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'login.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -11,103 +13,126 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final userId =
-        'KTAVSGJn1edYpqMePIt5QkFs44s2'; // Replace with the actual user ID
     return MaterialApp(
-      home: ProfileScreen(userId: userId),
+      home: AuthenticationWrapper(),
     );
   }
 }
 
-class UserProfile {
-  String id;
-  String name;
-  String email;
-  String contactNumber;
-  List<String> linkedFarms;
-
-  UserProfile({
-    required this.id,
-    required this.name,
-    required this.email,
-    required this.contactNumber,
-    required this.linkedFarms,
-  });
+class AuthenticationWrapper extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.active) {
+          User? user = snapshot.data;
+          if (user == null) {
+            return LoginScreen();
+          }
+          return ProfileScreen(userId: user.uid);
+        }
+        return CircularProgressIndicator();
+      },
+    );
+  }
 }
 
-class ProfileScreen extends StatefulWidget {
+class ProfileScreen extends StatelessWidget {
   final String userId;
 
   ProfileScreen({required this.userId});
 
   @override
-  _ProfileScreenState createState() => _ProfileScreenState();
-}
-
-class _ProfileScreenState extends State<ProfileScreen> {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  late UserProfile userProfile;
-
-  @override
-  void initState() {
-    super.initState();
-    // Initialize user profile by fetching it from Firestore based on the provided user ID
-    _fetchUserProfile();
-  }
-
-  Future<void> _fetchUserProfile() async {
-    try {
-      DocumentSnapshot profileSnapshot =
-          await _firestore.collection('users').doc(widget.userId).get();
-      if (profileSnapshot.exists) {
-        Map<String, dynamic> profileData =
-            profileSnapshot.data() as Map<String, dynamic>;
-        setState(() {
-          userProfile = UserProfile(
-            id: widget.userId,
-            name: profileData['name'],
-            email: profileData['email'],
-            contactNumber: profileData['contactNumber'],
-            linkedFarms: List<String>.from(profileData['linkedFarms']),
-          );
-        });
-      }
-    } catch (error) {
-      print('Error fetching user profile: $error');
-    }
-  }
-
-  Future<void> addUserProfile() async {
-    try {
-      await _firestore.collection('users').doc(userProfile.id).set({
-        'name': userProfile.name,
-        'email': userProfile.email,
-        'contactNumber': userProfile.contactNumber,
-        'linkedFarms': userProfile.linkedFarms,
-      });
-      print('User profile added successfully.');
-    } catch (error) {
-      print('Error adding user profile: $error');
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    if (userProfile == null) {
-      // Display a loading indicator while fetching user profile
-      return Scaffold(
-        appBar: AppBar(
-          title: Text('User Profile'),
-        ),
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
-    }
-
     return Scaffold(
       appBar: AppBar(
         title: Text('User Profile'),
+      ),
+      body: UserProfileDisplay(userId: userId),
+    );
+  }
+}
+
+class UserProfileDisplay extends StatelessWidget {
+  final String userId;
+
+  UserProfileDisplay({required this.userId});
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<DocumentSnapshot>(
+      future: FirebaseFirestore.instance.collection('users').doc(userId).get(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error loading user data'));
+        }
+
+        var userData = snapshot.data?.data() as Map<String, dynamic>?;
+
+        if (userData == null) {
+          return Center(child: Text('No user data found'));
+        }
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Name: ${userData['name']}'),
+            SizedBox(height: 16),
+            Text('Email: ${userData['email']}'),
+            SizedBox(height: 16),
+            Text('Contact Number: ${userData['contactNumber']}'),
+            SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (BuildContext context) {
+                      return EditUserProfileScreen(
+                        userId: userId,
+                        name: userData['name'],
+                        email: userData['email'],
+                        contactNumber: userData['contactNumber'],
+                      );
+                    },
+                  ),
+                );
+              },
+              child: Text('Edit User Profile'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class EditUserProfileScreen extends StatelessWidget {
+  final String userId;
+  final String name;
+  final String email;
+  final String contactNumber;
+
+  EditUserProfileScreen({
+    required this.userId,
+    required this.name,
+    required this.email,
+    required this.contactNumber,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    TextEditingController nameController = TextEditingController(text: name);
+    TextEditingController emailController = TextEditingController(text: email);
+    TextEditingController contactNumberController =
+        TextEditingController(text: contactNumber);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Edit User Profile'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -116,30 +141,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: [
             Text('Name:'),
             TextFormField(
-              initialValue: userProfile.name,
-              onChanged: (value) {
-                setState(() {
-                  userProfile.name = value;
-                });
-              },
+              controller: nameController,
+            ),
+            SizedBox(height: 16),
+            Text('Email:'),
+            TextFormField(
+              controller: emailController,
             ),
             SizedBox(height: 16),
             Text('Contact Number:'),
             TextFormField(
-              initialValue: userProfile.contactNumber,
-              onChanged: (value) {
-                setState(() {
-                  userProfile.contactNumber = value;
-                });
-              },
+              controller: contactNumberController,
             ),
             SizedBox(height: 16),
             ElevatedButton(
-              onPressed: addUserProfile,
-              child: Text('Add User Profile'),
+              onPressed: () {
+                // Implement the code to update user profile here
+              },
+              child: Text('Update User Profile'),
             ),
-            SizedBox(height: 16),
-            Text('Linked Farms: ${userProfile.linkedFarms.join(', ')}'),
           ],
         ),
       ),
