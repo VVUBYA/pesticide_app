@@ -56,7 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Image.asset('assets/images/logo.PNG', height: size.height * 0.2),
+              Image.asset('assets/images/icon.PNG', height: size.height * 0.2),
               Text(
                 'Welcome Back,',
                 textAlign: TextAlign.center,
