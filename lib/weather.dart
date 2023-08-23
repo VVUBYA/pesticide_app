@@ -5,6 +5,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
+import 'package:weather_icons/weather_icons.dart';
 
 class Weather extends StatefulWidget {
   @override
@@ -22,6 +23,16 @@ class WeatherState extends State<Weather> {
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context); // Navigate back when back button is pressed
+          },
+        ),
+        title: Text("Weather"), // Change to your app's title
+        // ... Other properties of AppBar
+      ),
       body: FutureBuilder<List<forecast>>(
           future: getweather(),
           builder: (context, snapshot) {
@@ -58,12 +69,16 @@ class WeatherState extends State<Weather> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         Container(
-                            height: 150,
-                            width: 150,
-                            child: Image.asset(
-                              getWeatherIcon(weather[0].id),
-                              fit: BoxFit.fill,
-                            )),
+                          height: 150,
+                          width: 150,
+                          child: Icon(
+                            getWeatherIcon(
+                                weather[0].id), // Use the weather icon directly
+                            size: 100, // Set the desired size for the icon
+                            color: Colors
+                                .white, // Set the desired color for the icon
+                          ),
+                        ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
@@ -163,8 +178,14 @@ class WeatherState extends State<Weather> {
                                   children: [
                                     SizedBox(
                                       height: 70,
-                                      child: Image.asset(
-                                          getWeatherIcon(document.desc)),
+                                      child: Icon(
+                                        getWeatherIcon(document
+                                            .desc), // Use the weather icon directly
+                                        size:
+                                            50, // Set the desired size for the icon
+                                        color: Colors
+                                            .white, // Set the desired color for the icon
+                                      ),
                                     ),
                                     Column(
                                       children: [
@@ -216,23 +237,25 @@ class WeatherState extends State<Weather> {
     }
   }
 
-  String getWeatherIcon(int condition) {
+  IconData getWeatherIcon(int condition) {
     if (condition < 300) {
-      return 'assets/ic_storm_weather.png';
+      return WeatherIcons
+          .day_thunderstorm; // Replace with the appropriate weather icon
     } else if (condition < 400) {
-      return 'assets/ic_rainy_weather.png';
+      return WeatherIcons.day_rain; // Replace with the appropriate weather icon
     } else if (condition < 600) {
-      return 'assets/ic_rainy_weather.png';
+      return WeatherIcons.day_rain; // Replace with the appropriate weather icon
     } else if (condition < 700) {
-      return 'assets/ic_snow_weather.png';
+      return WeatherIcons.day_snow; // Replace with the appropriate weather icon
     } else if (condition < 800) {
-      return 'assets/ic_mostly_cloudy.png';
+      return WeatherIcons.cloudy; // Replace with the appropriate weather icon
     } else if (condition == 800) {
-      return 'assets/ic_clear_day.png';
+      return WeatherIcons
+          .day_sunny; // Replace with the appropriate weather icon
     } else if (condition <= 804) {
-      return 'assets/ic_cloudy_weather.png';
+      return WeatherIcons.cloud; // Replace with the appropriate weather icon
     } else {
-      return 'assets/ic_unknown.png';
+      return WeatherIcons.na; // Replace with the appropriate weather icon
     }
   }
 
