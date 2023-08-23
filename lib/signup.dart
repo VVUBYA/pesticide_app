@@ -63,7 +63,7 @@ class SignUpScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Image.asset('assets/images/logo.PNG',
+              Image.asset('assets/images/icon.PNG',
                   height: size.height * 0.2), // Set the desired height
               Text(
                 'Get On Board!',
