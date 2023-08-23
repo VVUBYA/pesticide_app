@@ -26,13 +26,13 @@ class SprayProductsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Spray Products Page'),
+        title: Text('Spray Products'),
         actions: [
           Padding(
             padding: EdgeInsets.all(8.0),
             child: CircleAvatar(
               backgroundColor: Colors.blue,
-              child: Text('VD'), // Replace with user initials
+              child: Text(''), // Replace with user initials
             ),
           ),
         ],
@@ -52,6 +52,9 @@ class SprayProductsPage extends StatelessWidget {
               ),
             ),
           ),
+          Expanded(
+            child: ProductsTable(),
+          ),
           Padding(
             padding: EdgeInsets.all(16.0),
             child: Align(
@@ -63,9 +66,6 @@ class SprayProductsPage extends StatelessWidget {
                 child: Text('Add New Entry'),
               ),
             ),
-          ),
-          Expanded(
-            child: ProductsTable(),
           ),
         ],
       ),
@@ -126,7 +126,6 @@ class ProductsTable extends StatelessWidget {
                 DataColumn(label: Text('Name')),
                 DataColumn(label: Text('Type')),
                 DataColumn(label: Text('Manufacturer')),
-                DataColumn(label: Text('Restrictions')),
               ],
               rows: products.map((product) {
                 final data = product.data() as Map<String, dynamic>;
@@ -134,7 +133,6 @@ class ProductsTable extends StatelessWidget {
                   DataCell(Text(data['name'] ?? '')),
                   DataCell(Text(data['type'] ?? '')),
                   DataCell(Text(data['manufacturer'] ?? '')),
-                  DataCell(Text(data['restrictions'] ?? '')),
                 ]);
               }).toList(),
             );
@@ -157,6 +155,7 @@ class _AddProductDialogState extends State<AddProductDialog> {
   final _manufacturerController = TextEditingController();
   final _activeIngredientController = TextEditingController();
   final _restrictionsController = TextEditingController();
+  final _dosageController = TextEditingController();
   String? _selectedType;
 
   @override
@@ -237,6 +236,12 @@ class _AddProductDialogState extends State<AddProductDialog> {
                 ),
               ),
               TextFormField(
+                controller: _dosageController,
+                decoration: InputDecoration(
+                  labelText: 'Dosage',
+                ),
+              ),
+              TextFormField(
                 controller: _restrictionsController,
                 decoration: InputDecoration(
                   labelText: 'Restrictions/Withholding Period',
@@ -278,6 +283,7 @@ class _AddProductDialogState extends State<AddProductDialog> {
           'manufacturer': _manufacturerController.text,
           'activeIngredient': _activeIngredientController.text,
           'restrictions': _restrictionsController.text,
+          'dosage': _dosageController.text,
         };
 
         try {

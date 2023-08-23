@@ -79,6 +79,105 @@ class _PesticideIdentificationPageState
         "Mix 40g per 20L of water and spray on crop foliage.",
       ],
     ),
+    Pesticide(
+      name: "STRIKER",
+      category: "Insecticides",
+      imageURL:
+          "https://bukoolachemicals.com/wp-content/uploads/2023/03/striker-01-1.png",
+      description:
+          "For control of insect pests like cutworms, coffee twig borer, maize stalk borer, loopers, potato psyllids, white flies, cabbage moth, false codling moths etc..",
+      usage: [],
+    ),
+    Pesticide(
+      name: "ANT-KILLER",
+      category: "Insecticides",
+      imageURL:
+          "https://bukoolachemicals.com/wp-content/uploads/2023/03/Anti-killer-01.png",
+      description:
+          "An organophosphate based termiticide/insecticide with outstanding and versatile control of a wide range of insect and arthropods pests."
+          "Ant killer is used on crops, soil, livestock, public health, and other pest control operations"
+          "It is effective by contact, ingestion, and vapor.",
+      usage: [
+        "The application Rate depends on the type of pest, size, and age, the volume of spray-applied per unit surface.",
+        "Please read labels before use e.g. Ants, termites, Anthills, Building foundation, Banana planting material; ."
+            "Application:",
+        "Mix 150-250ml per 20L of water",
+        "For termites in sugarcane and other crops mix 60-100ml per 20L of water and apply on the target"
+      ],
+    ),
+    Pesticide(
+      name: "AMETRYNE",
+      category: "Herbicides",
+      imageURL:
+          "https://bukoolachemicals.com/wp-content/uploads/2023/03/AMETRYNE-01.png",
+      description:
+          "Ametryne is a selective herbicide for control of broadleaf and grass weeds in pineapple, sugarcane, bananas and plantains.",
+      usage: [
+        "Applications may be made pre-emergence or and post-emergence.",
+        "It can also be used as a post-directed spray in corn and as a potato vine desiccant. In addition, it can be used for total vegetation control."
+            "Application:",
+        "Mix 200-250ml of Ametryne per 20L of water.",
+      ],
+    ),
+    Pesticide(
+      name: "BACTERIMYCIN",
+      category: "Bacterialcides",
+      imageURL:
+          "https://bukoolachemicals.com/wp-content/uploads/2023/06/Bactericyin.jpg",
+      description:
+          "An exceptional immune modulator that imparts resistance to plants against bacterial diseases like leaf blight, black arm, cankers, angular leaf spot, seedling blight, and many more in cotton, citrus, chillies, tomatoes, onions, other vegetables, and fruits.",
+      usage: [
+        "Mix 1 teaspoon in 20L of water and apply on the crop. Bacterimycin is compatible with most pesticides."
+      ],
+    ),
+    Pesticide(
+      name: "BUTANIL-70",
+      category: "Herbicides",
+      imageURL:
+          "https://bukoolachemicals.com/wp-content/uploads/2023/03/Butanil-01.png",
+      description:
+          "This is a selective pre and post-emergence herbicide for control of weeds in rice.,It is used against numerous grasses and broadleaved weeds in rice and wheat",
+      usage: [
+        "Application:",
+        "Mix 200-250ml of Butanil-70 per 20L of water.",
+      ],
+    ),
+    Pesticide(
+      name: "DUDU CYPER 5% EC",
+      category: "Herbicides",
+      imageURL:
+          "https://bukoolachemicals.com/wp-content/uploads/2023/03/dudu-cyper-01.png",
+      description:
+          "This product has a rapid knockdown effect and will give substantial control over time.",
+      usage: [
+        "The recommended dosage will vary according to pest and local conditions. As an indication, the dosage will vary from 20 -55ml per 20L of water on Lettuce, celery, and deciduous fruits to 40- 80ml per 20L of water on coffee, tomatoes, potatoes, and cabbage. See the leaf on the container for details.",
+      ],
+    ),
+    Pesticide(
+      name: "FANGOCIL",
+      category: "Herbicides",
+      imageURL:
+          "https://bukoolachemicals.com/wp-content/uploads/2023/06/Fangocil.jpg",
+      description:
+          "Use Fangocil especially when environmental conditions allow for the rapid development of fungal spores",
+      usage: [
+        "Mix 80g per 20L of water. Avoid over-application and misuse of products to prevent the development of resistance.",
+      ],
+    ),
+    Pesticide(
+      name: "HARVESTER",
+      category: "Fungicide",
+      imageURL:
+          "https://bukoolachemicals.com/wp-content/uploads/2023/06/HARVESTER.jpg",
+      description:
+          "Haverster is a systemic fungicide for control of Oomycete diseases through foliar application in horticultural and other crops. Harvester is renowned for controlling Downy mildew, blight and damping off in crops like cucurbits, grapes, tomatoes, potatoes and pepper.",
+      usage: [
+        "The enhanced photosynthetic activity enables vigor and growth. Plants start producing its own natural PGR’s",
+        "More flowers, pods, and fruits. Prevents premature dropping of flowers and fruits"
+            "Application:",
+        "Mix 40-60ml of Harvester in 20L of water and apply on crop to control fungal diseases.",
+      ],
+    ),
   ];
 
   List<Pesticide> displayedPesticides = [];
