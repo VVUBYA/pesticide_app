@@ -53,8 +53,13 @@ class EntryDetailScreen extends StatelessWidget {
             Text('Finish Date: ${entry['finishdate'] ?? ''}'),
             Text('Target: ${entry['target'] ?? ''}'),
             Text('Site: ${entry['site'] ?? ''}'),
-            // Add other fields here
-            // ... Display all other saved information for this entry
+            Text('Operator: ${entry['operator'] ?? ''}'),
+            Text('Supervisor: ${entry['supervisor'] ?? ''}'),
+            Text('Num Tanks Sprayed: ${entry['numtanks'] ?? ''}'),
+            Text('Spray Suit: ${entry['spraysuit'] ?? ''}'),
+            Text('Growth Stage: ${entry['stage'] ?? ''}'),
+            Text('Temperature: ${entry['temperature'] ?? ''}'),
+            // ... Display other fields similarly
           ],
         ),
       ),

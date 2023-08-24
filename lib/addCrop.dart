@@ -36,13 +36,14 @@ class _PesticideDatabaseScreenState extends State<PesticideDatabaseScreen> {
   double? _maturityDays;
 
   List<String> fieldNames = [];
-
   String userId = FirebaseAuth.instance.currentUser!.uid;
+  List<Crop> crops = [];
 
   @override
   void initState() {
     super.initState();
     fetchFieldNames();
+    fetchCrops();
   }
 
   Future<void> fetchFieldNames() async {
@@ -55,6 +56,33 @@ class _PesticideDatabaseScreenState extends State<PesticideDatabaseScreen> {
       });
     } catch (e) {
       print('Error fetching field names: $e');
+    }
+  }
+
+  Future<void> fetchCrops() async {
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('crops')
+          .get();
+      List<Crop> fetchedCrops = querySnapshot.docs.map((doc) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        return Crop(
+          id: doc.id,
+          name: data['name'],
+          datePlanted: data['datePlanted'],
+          field: data['field'],
+          quantityPlanted: data['quantityPlanted'],
+          maturityDays: data['maturityDays'],
+        );
+      }).toList();
+
+      setState(() {
+        crops = fetchedCrops;
+      });
+    } catch (e) {
+      print('Error fetching crops: $e');
     }
   }
 
@@ -84,6 +112,7 @@ class _PesticideDatabaseScreenState extends State<PesticideDatabaseScreen> {
       );
 
       _formKey.currentState!.reset();
+      fetchCrops(); // Fetch crops again after adding
     } catch (e) {
       print('Error adding crop data: $e');
       ScaffoldMessenger.of(context).showSnackBar(
@@ -189,8 +218,83 @@ class _PesticideDatabaseScreenState extends State<PesticideDatabaseScreen> {
                 onPressed: addCropData,
                 child: Text('Add Crop Data'),
               ),
+              SizedBox(height: 20),
+              Text(
+                'Crop List',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              CropList(crops), // Display the crop list here
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class CropList extends StatelessWidget {
+  final List<Crop> crops;
+
+  CropList(this.crops);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      shrinkWrap: true,
+      itemCount: crops.length,
+      itemBuilder: (context, index) {
+        return CropListItem(
+          crop: crops[index],
+        );
+      },
+    );
+  }
+}
+
+class CropListItem extends StatelessWidget {
+  final Crop crop;
+
+  CropListItem({required this.crop});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Text(crop.name),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CropDetailsPage(crop: crop),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class CropDetailsPage extends StatelessWidget {
+  final Crop crop;
+
+  CropDetailsPage({required this.crop});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Crop Details'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Crop Name: ${crop.name}'),
+            Text('Date Planted: ${crop.datePlanted}'),
+            Text('Field: ${crop.field}'),
+            Text('Quantity Planted: ${crop.quantityPlanted}'),
+            Text('Days to Maturity: ${crop.maturityDays}'),
+            // Add other fields here
+          ],
         ),
       ),
     );

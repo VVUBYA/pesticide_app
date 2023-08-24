@@ -4,7 +4,7 @@ import 'menubar.dart';
 import 'pesticide_identfication_section.dart';
 import 'safety_tips.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'recent_activity.dart';
+import 'reports.dart';
 import 'usage_tracker.dart';
 import 'emergency_contacts.dart';
 import 'recent_activity.dart';
@@ -142,7 +142,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       context,
                       MaterialPageRoute(
                         builder: (BuildContext content) {
-                          return SprayDiaryPage();
+                          return SprayEntryReportPage();
                         },
                       ),
                     );

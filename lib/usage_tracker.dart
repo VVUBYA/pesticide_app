@@ -15,7 +15,6 @@ class Crop {
   final int daysToMaturity;
   final String field;
   final String name;
-  final int pesticides;
   final int quantityPlanted;
   final List<String> variety;
 
@@ -25,7 +24,6 @@ class Crop {
     required this.daysToMaturity,
     required this.field,
     required this.name,
-    required this.pesticides,
     required this.quantityPlanted,
     required this.variety,
   });
@@ -170,8 +168,7 @@ class CropListPage extends StatefulWidget {
 class _CropListPageState extends State<CropListPage> {
   @override
   Widget build(BuildContext context) {
-    String userId =
-        FirebaseAuth.instance.currentUser!.uid; // Get current user's ID
+    String userId = FirebaseAuth.instance.currentUser!.uid;
 
     return Scaffold(
       appBar: AppBar(
@@ -196,20 +193,45 @@ class _CropListPageState extends State<CropListPage> {
 
           final cropDocs = snapshot.data!.docs;
 
+          List<Crop> crops = cropDocs.map((doc) {
+            final cropData = doc.data() as Map<String, dynamic>;
+            return Crop(
+              id: doc.id,
+              datePlanted: cropData['datePlanted'] is Timestamp
+                  ? cropData['datePlanted'].toDate()
+                  : DateTime.now(),
+              daysToMaturity:
+                  cropData['daysToMaturity'] ?? 0, // Provide default value
+              field: cropData['field'] ?? 'Unknown Field',
+              name: cropData['name'] ?? 'Unnamed Crop',
+              quantityPlanted: cropData['quantityPlanted'] ?? 0,
+              variety: List<String>.from(cropData['variety'] ?? []),
+            );
+          }).toList();
+
           return ListView.builder(
-            itemCount: cropDocs.length,
+            itemCount: crops.length,
             itemBuilder: (context, index) {
-              final cropData = cropDocs[index].data() as Map<String, dynamic>;
+              final crop = crops[index];
 
               return ListTile(
-                title: Text(cropData['name'] ?? 'Unnamed Crop'),
+                title: TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CropDetailsPage(crop: crop),
+                      ),
+                    );
+                  },
+                  child: Text(crop.name),
+                ),
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Field: ${cropData['field'] ?? ''}'),
+                    Text('Field: ${crop.field}'),
                   ],
                 ),
-                // Add more details or actions as needed
               );
             },
           );
@@ -256,9 +278,6 @@ class CropDetailsPage extends StatelessWidget {
           ),
           ListTile(
             title: Text('Field: ${crop.field}'),
-          ),
-          ListTile(
-            title: Text('Pesticides: ${crop.pesticides}'),
           ),
           ListTile(
             title: Text('Quantity Planted: ${crop.quantityPlanted}'),
@@ -328,6 +347,8 @@ class CropDetailsPage extends StatelessWidget {
     );
   }
 }
+
+// ... (Previous code remains the same)
 
 class FieldListPage extends StatefulWidget {
   @override
@@ -411,6 +432,14 @@ class _FieldListPageState extends State<FieldListPage> {
                 itemBuilder: (context, index) {
                   final field = _fields[index];
                   return ListTile(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => FieldDetailsPage(field: field),
+                        ),
+                      );
+                    },
                     title: Text(field['name'] ?? 'Unnamed Field'),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -441,6 +470,84 @@ class _FieldListPageState extends State<FieldListPage> {
         label: Text('Add Field'),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+    );
+  }
+}
+
+class FieldDetailsPage extends StatelessWidget {
+  final Map<String, dynamic> field;
+
+  FieldDetailsPage({required this.field});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Field Details'),
+      ),
+      body: Column(
+        children: [
+          ListTile(
+            title: Text('Name: ${field['name'] ?? 'Unnamed Field'}'),
+          ),
+          ListTile(
+            title: Text('Type: ${field['type'] ?? ''}'),
+          ),
+          ListTile(
+            title: Text('Size: ${field['size'] ?? ''}'),
+          ),
+          ListTile(
+            title: Text('Status: ${field['status'] ?? ''}'),
+          ),
+          ListTile(
+            title: Text('Light Profile: ${field['lightProfile'] ?? ''}'),
+          ),
+          ListTile(
+            title: Text('Notes: ${field['notes'] ?? ''}'),
+          ),
+          // Display other fields and options here
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Show a bottom sheet with options
+          showModalBottomSheet(
+            context: context,
+            builder: (context) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ListTile(
+                    leading: Icon(Icons.remove_red_eye),
+                    title: Text('View Details'),
+                    onTap: () {
+                      // Handle view details
+                      Navigator.pop(context);
+                    },
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.edit),
+                    title: Text('Edit Record'),
+                    onTap: () {
+                      // Handle edit record
+                      Navigator.pop(context);
+                    },
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.delete),
+                    title: Text('Delete'),
+                    onTap: () {
+                      // Handle delete
+                      Navigator.pop(context);
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+        },
+        child: Icon(Icons.more_vert),
+      ),
     );
   }
 }

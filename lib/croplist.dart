@@ -1,6 +1,23 @@
 import 'package:flutter/material.dart';
-import 'pesticide_identfication_section.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+
+class Crop {
+  final String id;
+  final String name;
+  final DateTime datePlanted;
+  final String field;
+  final double quantityPlanted;
+  final double maturityDays;
+
+  Crop({
+    required this.id,
+    required this.name,
+    required this.datePlanted,
+    required this.field,
+    required this.quantityPlanted,
+    required this.maturityDays,
+  });
+}
 
 void main() {
   runApp(MyApp());
@@ -19,6 +36,29 @@ class MyApp extends StatelessWidget {
   }
 }
 
+class CropListItem extends StatelessWidget {
+  final Crop crop;
+
+  CropListItem({required this.crop});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: TextButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CropDetailsPage(crop: crop),
+            ),
+          );
+        },
+        child: Text(crop.name),
+      ),
+    );
+  }
+}
+
 class FarmManagementScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -28,13 +68,7 @@ class FarmManagementScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              CropListCard(),
-              FieldListCard(),
-            ],
-          ),
+          CropListCard(),
           SizedBox(height: 20),
           // Add other sections here
         ],
@@ -63,59 +97,6 @@ class CropListCard extends StatelessWidget {
               Icon(Icons.grass, size: 100, color: Colors.green),
               SizedBox(height: 20),
               Text('Crop List', style: TextStyle(fontSize: 20)),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class FieldListCard extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 3,
-      margin: EdgeInsets.all(16),
-      child: InkWell(
-        onTap: () {
-          // Handle onTap
-        },
-        child: Container(
-          padding: EdgeInsets.all(20),
-          child: Column(
-            children: [
-              Icon(Icons.landscape, size: 100, color: Colors.brown),
-              SizedBox(height: 20),
-              Text('Field List', style: TextStyle(fontSize: 20)),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class PesticideListCard extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 3,
-      margin: EdgeInsets.all(16),
-      child: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => SprayProductsPage()),
-          );
-        },
-        child: Container(
-          padding: EdgeInsets.all(20),
-          child: Column(
-            children: [
-              Icon(Icons.grass, size: 100, color: Colors.green),
-              SizedBox(height: 20),
-              Text('Spray Products', style: TextStyle(fontSize: 20)),
             ],
           ),
         ),
@@ -162,31 +143,23 @@ class CropList extends StatelessWidget {
           );
         }
 
-        return ListView.builder(
-          itemCount: cropDocs.length,
-          itemBuilder: (context, index) {
-            Map<String, dynamic> cropData =
-                cropDocs[index].data() as Map<String, dynamic>;
+        List<Crop> crops = cropDocs.map((doc) {
+          Map<String, dynamic> cropData = doc.data() as Map<String, dynamic>;
+          return Crop(
+            id: doc.id,
+            name: cropData['name'] ?? 'Unknown Crop',
+            datePlanted: cropData['datePlanted'].toDate(),
+            field: cropData['field'],
+            quantityPlanted: cropData['quantityPlanted'],
+            maturityDays: cropData['maturityDays'],
+          );
+        }).toList();
 
-            return ListTile(
-              title: Text(cropData['name'] ?? 'Unknown Crop'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => CropDetailsPage(cropData: cropData),
-                  ),
-                );
-              },
-              trailing: IconButton(
-                icon: Icon(Icons.delete),
-                onPressed: () async {
-                  await FirebaseFirestore.instance
-                      .collection('crops')
-                      .doc(cropDocs[index].id)
-                      .delete();
-                },
-              ),
+        return ListView.builder(
+          itemCount: crops.length,
+          itemBuilder: (context, index) {
+            return CropListItem(
+              crop: crops[index],
             );
           },
         );
@@ -196,9 +169,9 @@ class CropList extends StatelessWidget {
 }
 
 class CropDetailsPage extends StatelessWidget {
-  final Map<String, dynamic> cropData;
+  final Crop crop;
 
-  CropDetailsPage({required this.cropData});
+  CropDetailsPage({required this.crop});
 
   @override
   Widget build(BuildContext context) {
@@ -211,11 +184,11 @@ class CropDetailsPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Crop Name: ${cropData['name']}'),
-            Text('Date Planted: ${cropData['datePlanted']}'),
-            Text('Field: ${cropData['field']}'),
-            Text('Quantity Planted: ${cropData['quantityPlanted']}'),
-            Text('Days to Maturity: ${cropData['daysToMaturity']}'),
+            Text('Crop Name: ${crop.name}'),
+            Text('Date Planted: ${crop.datePlanted}'),
+            Text('Field: ${crop.field}'),
+            Text('Quantity Planted: ${crop.quantityPlanted}'),
+            Text('Days to Maturity: ${crop.maturityDays}'),
             // Add other fields here
           ],
         ),

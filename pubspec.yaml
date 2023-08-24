@@ -38,6 +38,9 @@ dependencies:
   geolocator: ^9.0.2
   syncfusion_flutter_calendar: ^21.1.41
   weather_icons: ^3.0.0
+  pdf: ^3.6.0
+  image: ^3.0.1
+  flutter_local_notifications: ^15.0.0
   
 
 dev_dependencies:

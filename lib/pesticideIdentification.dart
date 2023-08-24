@@ -40,10 +40,10 @@ class _PesticideIdentificationPageState
     extends State<PesticideIdentificationPage> {
   final List<Pesticide> allPesticides = [
     Pesticide(
-      name: "24D-AMINE-720 G/L",
+      name: "JEMBE",
       category: "Herbicides",
       imageURL:
-          "https://bukoolachemicals.com/wp-content/uploads/2023/05/24D-01-01.png",
+          "https://bukoolachemicals.com/wp-content/uploads/2023/03/Jembe-01.png",
       description:
           "Selective systemic herbicide readily absorbed by foliage accumulating at growing points of shoots and roots to inhibit further growth of...",
       usage: [
@@ -56,7 +56,7 @@ class _PesticideIdentificationPageState
     ),
     Pesticide(
       name: "AGRi GOLD",
-      category: "Fungicides",
+      category: "Fertilizer",
       imageURL:
           "https://bukoolachemicals.com/wp-content/uploads/2023/06/AgriGold.jpg",
       description:
@@ -67,7 +67,7 @@ class _PesticideIdentificationPageState
     ),
     Pesticide(
       name: "ALLWIN Top",
-      category: "Herbicides",
+      category: "Fertilizer",
       imageURL:
           "https://bukoolachemicals.com/wp-content/uploads/2023/06/Alwin-top.jpg",
       description:
@@ -144,7 +144,7 @@ class _PesticideIdentificationPageState
     ),
     Pesticide(
       name: "DUDU CYPER 5% EC",
-      category: "Herbicides",
+      category: "Insecticide",
       imageURL:
           "https://bukoolachemicals.com/wp-content/uploads/2023/03/dudu-cyper-01.png",
       description:
@@ -155,7 +155,7 @@ class _PesticideIdentificationPageState
     ),
     Pesticide(
       name: "FANGOCIL",
-      category: "Herbicides",
+      category: "Fungicide",
       imageURL:
           "https://bukoolachemicals.com/wp-content/uploads/2023/06/Fangocil.jpg",
       description:
@@ -176,6 +176,60 @@ class _PesticideIdentificationPageState
         "More flowers, pods, and fruits. Prevents premature dropping of flowers and fruits"
             "Application:",
         "Mix 40-60ml of Harvester in 20L of water and apply on crop to control fungal diseases.",
+      ],
+    ),
+    Pesticide(
+      name: "WeedMaster",
+      category: "Herbicide",
+      imageURL:
+          "https://bukoolachemicals.com/wp-content/uploads/2023/03/Weed-master-01.png",
+      description:
+          "The most widely used agricultural herbicide for general weed control. Weedmaster effectively controls brushes, soft annual weeds, and stubborn perennial weeds and grasses like a spear, couch, and star grasses.",
+      usage: [
+        "Application:",
+        "Mix 40-60ml of Harvester in 20L of water and apply on crop to control fungal diseases.",
+      ],
+    ),
+    Pesticide(
+      name: "INDOFIL M-45",
+      category: "Fungicide",
+      imageURL:
+          "https://bukoolachemicals.com/wp-content/uploads/2023/06/Indofil.jpg",
+      description:
+          "It is a combined fungicide that prevents many fungal diseases in a wide range of field crops, fruits, nuts, vegetables, and ornamentals. Indofil is widely used to prevent fungal diseases in tomatoes, potatoes, and peppers.",
+      usage: [
+        "When disease infestation is severe, alternate with or turn to curative Brands like Harvester, Harvestor XL or Fangocil."
+            "Application:",
+        "Mix 40-80g of Indofil in 20L of water and apply on crop routinely.",
+      ],
+    ),
+    Pesticide(
+      name: "MICRO FOOD (AC)",
+      category: "Fertilizer",
+      imageURL:
+          "https://bukoolachemicals.com/wp-content/uploads/2023/06/HARVESTER.jpg",
+      description:
+          "This product the essential micro-nutrients for proper crop function and growth. These nutrients, including Iron, Manganese, Zinc, Copper, Molybdenum, Boron, and Magnesium are all supplied in readily available forms for plant uptake. ",
+      usage: [
+        "Depending upon the crop in question, the 1st application is recommended during the vegetative stage, 2nd during flowering and 3rd during the initial stage of fruit set."
+            "Application:",
+        "Mix 40-60ml of MICRO FOOD (AC) in 20L of water and apply on crop to control fungal diseases.",
+      ],
+    ),
+    Pesticide(
+      name: "JEMBE",
+      category: "Herbicide",
+      imageURL:
+          "https://bukoolachemicals.com/wp-content/uploads/2023/03/Jembe-01.png",
+      description:
+          "JEMBE is a water-soluble non-selective herbicide that mixes well with water to be applied as a foliar spray for the control of most herbaceous plants. It is actively absorbed through immature bark and leaves of most plants and trees. Always make sure that only undesirable plants are treated.",
+      usage: [
+        "Wash hands before eating, drinking, or using the toilet."
+            "Remove clothes immediately if pesticide gets inside."
+            "Do not re-use or re-fill pesticide containers."
+            "Tripple rinse promptly after emptying"
+            "Application:",
+        "Half fill the spray tank with clean water and add 150-200mls of JEMBE in a 15 to 20 Litres respectively.",
       ],
     ),
   ];

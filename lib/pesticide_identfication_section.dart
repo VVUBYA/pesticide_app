@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'productdetails.dart';
 
 void main() {
   runApp(MyApp());
@@ -129,11 +130,26 @@ class ProductsTable extends StatelessWidget {
               ],
               rows: products.map((product) {
                 final data = product.data() as Map<String, dynamic>;
-                return DataRow(cells: [
-                  DataCell(Text(data['name'] ?? '')),
-                  DataCell(Text(data['type'] ?? '')),
-                  DataCell(Text(data['manufacturer'] ?? '')),
-                ]);
+                return DataRow(
+                  cells: [
+                    DataCell(
+                      GestureDetector(
+                        child: Text(data['name'] ?? ''),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ProductDetailPage(
+                                  data), // Pass product data to the detail page
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    DataCell(Text(data['type'] ?? '')),
+                    DataCell(Text(data['manufacturer'] ?? '')),
+                  ],
+                );
               }).toList(),
             );
           },

@@ -1,132 +1,93 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
+import 'dart:typed_data';
 
-class SprayReportScreen extends StatelessWidget {
-  final Map<String, dynamic> sprayData;
+void main() {
+  runApp(MaterialApp(
+    title: 'Spray Entry PDF Report',
+    home: SprayEntryReportPage(),
+  ));
+}
 
-  SprayReportScreen({required this.sprayData});
+class SprayEntryReportPage extends StatelessWidget {
+  final Map<String, dynamic> sprayEntry = {
+    // Your spray entry data goes here
+    'status': 'Completed',
+    'startdate': 'August 18, 2023 at 8:55:18 AM UTC+3',
+    'temperature': 25.5,
+    'anyrain': false,
+    // Add other fields here
+  };
+
+  Future<void> generatePDFReport() async {
+    final pdf = pw.Document();
+
+    pdf.addPage(
+      pw.Page(
+        build: (pw.Context context) {
+          return pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Container(
+                decoration: pw.BoxDecoration(
+                  border: pw.Border(
+                    top: pw.BorderSide(
+                      color: PdfColors.blue, // Correct usage
+                      width: 1.0, // Adjust the width as needed
+                    ),
+                  ),
+                ),
+                child: pw.Header(
+                  level: 0,
+                  text: 'Spray Entry Report',
+                  textStyle: pw.TextStyle(fontSize: 24),
+                ),
+              ),
+              pw.SizedBox(height: 10),
+              pw.Text('Status: ${sprayEntry['status'] ?? ''}',
+                  style: pw.TextStyle(fontSize: 16)),
+              pw.Text('Start Date: ${sprayEntry['startdate'] ?? ''}',
+                  style: pw.TextStyle(fontSize: 16)),
+              pw.Text('Temperature: ${sprayEntry['temperature'] ?? ''}',
+                  style: pw.TextStyle(fontSize: 16)),
+              pw.Text('Rain: ${sprayEntry['anyrain'] ?? ''}',
+                  style: pw.TextStyle(fontSize: 16)),
+              // Additional fields and safety evaluation
+              // ...
+            ],
+          );
+        },
+      ),
+    );
+
+    final pdfBytes = await pdf.save();
+    final outputFile = await savePDF(pdfBytes);
+
+    print('PDF saved to: $outputFile');
+  }
+
+  Future<String> savePDF(Uint8List pdfBytes) async {
+    final output = await getTemporaryDirectory();
+    final outputFile = File('${output.path}/spray_entry_report.pdf');
+    await outputFile.writeAsBytes(pdfBytes.toList());
+    return outputFile.path;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Spray Report'),
+        title: Text('Spray Entry Report'),
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Spray Report',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 16),
-            Text('Date: ${DateFormat.yMd().add_Hm().format(DateTime.now())}'),
-            Text('Operator: ${sprayData['operator']}'),
-            Text('Supervisor: ${sprayData['supervisor']}'),
-            SizedBox(height: 16),
-            Text(
-              'Spray Details',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 8),
-            Text('Spray Status: ${sprayData['status']}'),
-            Text(
-                'Start Date/Time: ${DateFormat.yMd().add_Hm().format(sprayData['startdate'])}'),
-            Text(
-                'Finish Date/Time: ${DateFormat.yMd().add_Hm().format(sprayData['finishdate'])}'),
-            Text(
-                'Neighbors Notified: ${sprayData['neighbornotified'] ? 'Yes' : 'No'}'),
-            Text('Comments/Observation: ${sprayData['observations']}'),
-            Text('Instructions: ${sprayData['instructions']}'),
-            SizedBox(height: 16),
-            Text(
-              'Safety Equipment',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 8),
-            Text('Gloves: ${sprayData['gloves'] ? 'Yes' : 'No'}'),
-            Text('Hat: ${sprayData['hat'] ? 'Yes' : 'No'}'),
-            Text('Boots: ${sprayData['boots'] ? 'Yes' : 'No'}'),
-            Text('Respirator/Mask: ${sprayData['respirator'] ? 'Yes' : 'No'}'),
-            Text('Overalls: ${sprayData['overalls'] ? 'Yes' : 'No'}'),
-            Text('Spraysuit: ${sprayData['spraysuit'] ? 'Yes' : 'No'}'),
-            Text('First Aid Kit: ${sprayData['firstaid'] ? 'Yes' : 'No'}'),
-            Text('Apron: ${sprayData['apron'] ? 'Yes' : 'No'}'),
-            Text('Safe Helmet: ${sprayData['helmet'] ? 'Yes' : 'No'}'),
-            SizedBox(height: 16),
-            Text(
-              'Target Details',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 8),
-            Text('Target: ${sprayData['target']}'),
-            Text('Target Description: ${sprayData['description']}'),
-            SizedBox(height: 16),
-            Text(
-              'Weather Conditions',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 8),
-            Text('Temperature (°C): ${sprayData['temperature']}'),
-            Text('Humidity (%): ${sprayData['humidity']}'),
-            Text('Cloud Cover (%): ${sprayData['cloud']}'),
-            Text('Wind Speed (km/h): ${sprayData['windspeed']}'),
-            Text('Wind Direction: ${sprayData['direction']}'),
-            Text('Any Rain? ${sprayData['anyrain'] ? 'Yes' : 'No'}'),
-            SizedBox(height: 16),
-            Text(
-              'Spray Site Details',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 8),
-            Text('Site/Area: ${sprayData['site']}'),
-            Text('Growth Stage: ${sprayData['stage']}'),
-            Text('Spray Unit: ${sprayData['unit']}'),
-            Text('Number of Tanks Sprayed: ${sprayData['numtanks']}'),
-          ],
+      body: Center(
+        child: ElevatedButton(
+          onPressed: generatePDFReport,
+          child: Text('Generate PDF Report'),
         ),
       ),
     );
   }
-}
-
-void main() {
-  runApp(MaterialApp(
-    title: 'Spray Report App',
-    home: SprayReportScreen(
-      sprayData: {
-        'operator': 'John Doe',
-        'supervisor': 'Jane Smith',
-        'status': 'scheduled',
-        'startdate': DateTime.now(),
-        'finishdate': DateTime.now(),
-        'neighbornotified': true,
-        'observations': 'Observations...',
-        'instructions': 'Instructions...',
-        'gloves': true,
-        'hat': false,
-        'boots': true,
-        'respirator': false,
-        'overalls': true,
-        'spraysuit': true,
-        'firstaid': false,
-        'apron': true,
-        'helmet': false,
-        'target': 'Weeds',
-        'description': 'Broadleaf weeds',
-        'temperature': 25.5,
-        'humidity': 70.0,
-        'cloud': 30.0,
-        'windspeed': 10.0,
-        'direction': 'North',
-        'anyrain': false,
-        'site': 'Field A',
-        'stage': 'Vegetative',
-        'unit': 'Backpack Sprayer',
-        'numtanks': 3,
-      },
-    ),
-  ));
 }
